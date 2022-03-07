@@ -1,20 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {FC, useState} from 'react';
+import { SafeAreaView, StatusBar } from 'react-native';
 
-export default function App() {
+import { StartScreen } from './screens/StartScreen';
+import { WatchScreen } from './screens/WatchScreen';
+
+const App: FC = () => {
+  const [isWatch,setWatch] = useState(false);
+  const [isOffline, setOffline] = useState(false);
+  const [isCreate, setCreate] = useState(false);
+  const [roomCode, setRoomCode] = useState('');
+
+  function beginWatch() {
+    setWatch(true);
+  }
+
+  function endWatch() {
+    setWatch(false);
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <StatusBar />
+      <SafeAreaView>
+        {!isWatch ? <StartScreen beginWatch={beginWatch} setOffline={setOffline} setCreate={setCreate} setRoomCode={setRoomCode} /> : <WatchScreen endWatch={endWatch} isOffline={isOffline} isCreate={isCreate} roomCode={roomCode} />}
+      </SafeAreaView>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
