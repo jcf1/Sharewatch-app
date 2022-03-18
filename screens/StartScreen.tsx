@@ -13,9 +13,10 @@ export const StartScreen: FC<Props> = ({beginWatch,setOffline,setCreate,setRoomC
     const [code, setCode] = useState('');
 
     function joinPress() {
-
-        setRoomCode(code);
-        beginWatch();
+        if(code.length === 4) {
+            setRoomCode(code);
+            beginWatch();
+        }
     }
 
     function createPress() {
@@ -36,15 +37,15 @@ export const StartScreen: FC<Props> = ({beginWatch,setOffline,setCreate,setRoomC
 
             <View>
                 <View style={styles.joinView}>
-                    <TextInput style={styles.joinInput} placeholder="CODE" autoCapitalize="characters" autoCompleteType="off" maxLength={4}/>
-                    <TouchableHighlight style={styles.joinButton}>
+                    <TextInput style={styles.joinInput} placeholder="CODE" autoCapitalize="characters" autoCompleteType="off" maxLength={4} onChangeText={setCode}/>
+                    <TouchableHighlight style={styles.joinButton} onPress={joinPress}>
                         <Text style={styles.buttonText}>Join Room</Text>
                     </TouchableHighlight>
                 </View>
-                    <TouchableHighlight style={styles.fullButton}>
+                    <TouchableHighlight style={styles.fullButton} onPress={createPress}>
                         <Text style={styles.buttonText}>Create Room</Text>
                     </TouchableHighlight>
-                    <TouchableHighlight style={styles.fullButton}>
+                    <TouchableHighlight style={styles.fullButton} onPress={offlinePress}>
                         <Text style={styles.buttonText}>Offline StopWatch</Text>
                     </TouchableHighlight>
             </View>
