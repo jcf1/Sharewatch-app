@@ -1,17 +1,17 @@
-import React, {FC, useState} from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
 
 interface Props {
     endWatch: () => void;
     code?: string;
     isHead?: boolean;
-}
+};
 
 /*
 { code ? <Text>Room Code:{code}</Text> : null }
 { isHead ? <Text style={styles.rightContainer}>Head</Text> : null }
 */
-export const WatchHeader: React.FC<Props> = ({endWatch, code, isHead}) => {
+export const WatchHeader: React.FC<Props> = ({ endWatch, code, isHead }) => {
     return(
         <View style={styles.header}>
             <TouchableHighlight style={styles.leftContainer} onPress={endWatch}>

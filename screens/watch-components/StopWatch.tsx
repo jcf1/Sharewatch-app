@@ -1,6 +1,8 @@
-import React, {FC, useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
+
+import { TextFixedWidth } from './TextFixedWidth';
 
 interface Props {
     isOffline: boolean;
@@ -8,9 +10,9 @@ interface Props {
     isRunning?: boolean;
     startTime?: number;
     headStart?: () => void;
-}
+};
 
-export const StopWatch: React.FC<Props> = ({isOffline,isHead,isRunning,startTime,headStart}) => {
+export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, startTime, headStart }) => {
 
     const [isLocalRunning, setLocalRunning] = useState(false);
     const [localStartTime, setLocalStartTime] = useState(0);
@@ -87,25 +89,36 @@ export const StopWatch: React.FC<Props> = ({isOffline,isHead,isRunning,startTime
     //---------REMOTE STOPWATCH FUNCTIONS---------
 
     function millisecToMainDisplayTime(millisec: number) {
-        let milli: string = (millisec % 1000).toString().padStart(3,"0");
+        let display: string = (millisec % 1000).toString().padStart(3,"0");
+
         let sec_num: number = Math.floor(millisec / 1000);
-
         let minu_num: number = Math.floor(sec_num / 60);
-        let sec: string = (sec_num % 60).toString().padStart(2,"0");
+        let hour_num: number = Math.floor(minu_num / 60);
 
-        let hour: string = Math.floor(minu_num / 60).toString();
-        let minu: string = (minu_num % 60).toString().padStart(2,"0");
-        return hour+":"+minu+":"+sec+"."+milli;
+        let sec: string = (sec_num % 60).toString();
+        let hour: string = (hour_num % 100).toString();
+        let minu: string = (minu_num % 60).toString();
+        if(hour_num > 0) {
+            minu = minu.padStart(2,"0");
+            sec = sec.padStart(2,"0");
+            display = hour+":"+minu+":"+sec+"."+display;
+        } else if(minu_num > 0) {
+            sec = sec.padStart(2,"0");
+            display = minu+":"+sec+"."+display;
+        } else {
+            display = sec+"."+display;
+        }
+        
+        return display;
     }
 
     return(
         <View style={styles.container}>
            <View style={styles.watch}>
-               <Text style={styles.watchText}>{millisecToMainDisplayTime(watchDisplayTime)}</Text>
+               <TextFixedWidth fontSize={50} color={'#ffffff'}>{millisecToMainDisplayTime(watchDisplayTime)}</TextFixedWidth>
            </View>
-
            <View style={styles.split}>
-               <Text style={styles.splitText}>{millisecToMainDisplayTime(splitDisplayTime)}</Text>
+               <TextFixedWidth fontSize={35} color={'#ffff00'}>{millisecToMainDisplayTime(splitDisplayTime)}</TextFixedWidth>
            </View>
 
             <View style={styles.primaryButtons}>
@@ -132,20 +145,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#2B2B2B',
     },
     watch: {
-
-    },
-    watchText: {
-        fontSize: 60,
-        color: '#ffffff',
         paddingTop: 40,
         paddingBottom: 20,
     },
     split: {
-
-    },
-    splitText: {
-        fontSize: 40,
-        color: '#fffff0',
         paddingBottom: 20,
     },
     primaryButtons: {

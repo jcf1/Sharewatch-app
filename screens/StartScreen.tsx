@@ -6,8 +6,7 @@ interface Props {
     setOffline: React.Dispatch<React.SetStateAction<boolean>>;
     setCreate: React.Dispatch<React.SetStateAction<boolean>>;
     setRoomCode: React.Dispatch<React.SetStateAction<string>>;
-}
-
+};
 
 export const StartScreen: FC<Props> = ({beginWatch,setOffline,setCreate,setRoomCode}) => {
     const [code, setCode] = useState('');

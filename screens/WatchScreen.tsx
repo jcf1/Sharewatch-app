@@ -9,9 +9,9 @@ interface Props {
     isOffline: boolean;
     isCreate: boolean;
     roomCode: string;
-}
+};
 
-export const WatchScreen: React.FC<Props> = ({endWatch,isOffline,isCreate,roomCode}) => {
+export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, isCreate, roomCode }) => {
     return(
         <>
             <WatchHeader endWatch={endWatch}/>
