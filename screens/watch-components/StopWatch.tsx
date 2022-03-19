@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 
 import { TextFixedWidth } from './TextFixedWidth';
+import { Splits } from './Splits';
 
 interface Props {
     isOffline: boolean;
@@ -88,7 +89,7 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
 
     //---------REMOTE STOPWATCH FUNCTIONS---------
 
-    function millisecToMainDisplayTime(millisec: number) {
+    function timeToDisplay(millisec: number) {
         let display: string = (millisec % 1000).toString().padStart(3,"0");
 
         let sec_num: number = Math.floor(millisec / 1000);
@@ -115,10 +116,10 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
     return(
         <View style={styles.container}>
            <View style={styles.watch}>
-               <TextFixedWidth fontSize={50} color={'#ffffff'}>{millisecToMainDisplayTime(watchDisplayTime)}</TextFixedWidth>
+               <TextFixedWidth fontSize={50} color={'#ffffff'}>{timeToDisplay(watchDisplayTime)}</TextFixedWidth>
            </View>
            <View style={styles.split}>
-               <TextFixedWidth fontSize={35} color={'#ffff00'}>{millisecToMainDisplayTime(splitDisplayTime)}</TextFixedWidth>
+               <TextFixedWidth fontSize={35} color={'#ffff00'}>{timeToDisplay(splitDisplayTime)}</TextFixedWidth>
            </View>
 
             <View style={styles.primaryButtons}>
@@ -133,6 +134,9 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
                     </TouchableOpacity>
                 </View>
             </View>
+
+            <Splits splits={splits} timeToDisplay={timeToDisplay}/>
+
             {(isOffline && isHead) ? <View><TouchableOpacity></TouchableOpacity></View> : null}
        </View>
     );
@@ -154,6 +158,7 @@ const styles = StyleSheet.create({
     primaryButtons: {
         alignItems: 'flex-start',
         flexDirection: 'row',
+        paddingBottom: 30,
     },
     primaryButton: {
         width: 125,
