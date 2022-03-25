@@ -25,19 +25,19 @@ export const Splits: React.FC<Props> = ({ splits, timeToDisplay }) => {
     }
 
     return(
-        <ScrollView style={styles.splitView}>
-            <FlatList
-                data={splits}
-                renderItem={({item,index}) => renderSplit(item, index)}
-            />
-        </ScrollView>
+        <FlatList
+            style={styles.splitView}
+            data={splits}
+            renderItem={({ item, index }) => renderSplit(item, index)}
+            keyExtractor={(item, index) => index.toString()}
+        />
     );
 }
 
 const styles = StyleSheet.create({
     splitView: {
-        height: 150,
-        maxHeight: 150,
+        height: 180,
+        maxHeight: 180,
         width: 325,
         backgroundColor: "#ffffff",
     },

@@ -2,25 +2,28 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
 
 interface Props {
+    isOffline: boolean;
     endWatch: () => void;
-    code?: string;
-    isHead?: boolean;
+    code: string;
+    isHead: boolean;
 };
 
 /*
 { code ? <Text>Room Code:{code}</Text> : null }
 { isHead ? <Text style={styles.rightContainer}>Head</Text> : null }
 */
-export const WatchHeader: React.FC<Props> = ({ endWatch, code, isHead }) => {
+export const WatchHeader: React.FC<Props> = ({ isOffline, endWatch, code, isHead }) => {
     return(
         <View style={styles.header}>
-            <TouchableHighlight style={styles.leftContainer} onPress={endWatch}>
-                <Text style={{textAlign: 'left', fontSize: 20}}>
-                    Back
-                </Text>
-            </TouchableHighlight>
-            <Text style={{textAlign: 'right', fontSize: 20}}>Room Code: CODE</Text>
-            <Text style={styles.rightContainer}>Head</Text>
+            <View style={styles.leftContainer}>
+                <TouchableHighlight onPress={endWatch}>
+                    <Text style={{textAlign: 'left', fontSize: 20}}>
+                        Back
+                    </Text>
+                </TouchableHighlight>
+            </View>
+            {isOffline ? null : <Text style={{textAlign: 'right', fontSize: 20}}>Room Code: {code.toUpperCase()}</Text>}
+            {isOffline && !isHead ? null : <Text style={styles.rightContainer}>Head</Text>}
         </View>
     );
 }
@@ -38,6 +41,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         paddingLeft: 10,
+        width: 50,
     },
     rightContainer: {
         flex: 1,

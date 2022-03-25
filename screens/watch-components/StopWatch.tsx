@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import moment from 'moment';
 
 import { TextFixedWidth } from './TextFixedWidth';
@@ -10,10 +10,11 @@ interface Props {
     isHead?: boolean;
     isRunning?: boolean;
     startTime?: number;
-    headStart?: () => void;
+    remoteStart?: () => void;
+    remoteReset?: () => void;
 };
 
-export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, startTime, headStart }) => {
+export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, startTime, remoteStart, remoteReset }) => {
 
     const [isLocalRunning, setLocalRunning] = useState(false);
     const [localStartTime, setLocalStartTime] = useState(0);
@@ -30,8 +31,34 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
     let watchInterval: { current: NodeJS.Timeout | null } = useRef(null);
     let splitInterval: { current: NodeJS.Timeout | null } = useRef(null);
 
+    function resetAlert() {
+        Alert.alert(
+            "Room Reset",
+            "Are you sure you want to stop and reset all connected watches?",
+            [
+                {
+                text: "No",
+                onPress: () => {},
+                style: "cancel"
+                },
+                { text: "Yes", onPress: remoteReset }
+            ]
+        );
+    }
+
     useEffect(() => {
-    }, [isRunning]);
+        if(isRunning && startTime && startTime > 0) {
+            setLocalRunning(true);
+            setLocalStartTime(startTime);
+            setLocalSplitTime(startTime);
+            startIntervals(startTime);
+        } else if(!isRunning) {
+            if(isLocalRunning) {
+                stopWatch();
+            }
+            resetWatch();
+        }
+    }, [isRunning, startTime]);
 
     function runWatch(time: number) {
         setWatchDisplayTime(watchTime + (moment.now() - time));
@@ -43,17 +70,21 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
 
     //---------OFFLINE STOPWATCH FUNCTIONS---------
 
-    function startWatch() {
+    function startIntervals(time: number) {
+        watchInterval.current = setInterval(() => {
+            runWatch(time);
+        }, 1);
+        splitInterval.current = setInterval(() => {
+            runSplit(time);
+        }, 1);
+    }
+
+    function localStartWatch() {
         const now: number = moment.now();
         setLocalRunning(true);
         setLocalStartTime(now);
         setLocalSplitTime(now);
-        watchInterval.current = setInterval(() => {
-            runWatch(now);
-        }, 1);
-        splitInterval.current = setInterval(() => {
-            runSplit(now);
-        }, 1);
+        startIntervals(now);
     }
 
     function stopWatch() {
@@ -124,12 +155,12 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
 
             <View style={styles.primaryButtons}>
                 <View style={{paddingRight: 20}}>
-                    <TouchableOpacity style={[styles.primaryButton]} onPress={!isLocalRunning ? startWatch : stopWatch}>
+                    <TouchableOpacity style={[styles.primaryButton]} onPress={!isLocalRunning ? localStartWatch : stopWatch} disabled={!isOffline && !isRunning}>
                         <Text style={styles.primaryButtonText}>{!isLocalRunning ? "START" : "STOP"}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{paddingLeft: 20}}>
-                    <TouchableOpacity style={[styles.primaryButton]} onPress={!isLocalRunning ? resetWatch : splitWatch}>
+                    <TouchableOpacity style={[styles.primaryButton]} onPress={!isLocalRunning ? resetWatch : splitWatch} disabled={!isOffline && !isRunning}>
                         <Text style={styles.primaryButtonText}>{!isLocalRunning ? "RESET" : "SPLIT"}</Text>
                     </TouchableOpacity>
                 </View>
@@ -137,7 +168,7 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
 
             <Splits splits={splits} timeToDisplay={timeToDisplay}/>
 
-            {(isOffline && isHead) ? <View><TouchableOpacity></TouchableOpacity></View> : null}
+            {(!isOffline && isHead) ? <View style={{paddingTop: 50}}><TouchableOpacity style={styles.remoteButton} onPress={!isRunning ? remoteStart : resetAlert}><Text style={styles.primaryButtonText}>{!isRunning ? "START ALL WATCHES" : "RESET ALL WATCHES"}</Text></TouchableOpacity></View> : null}
        </View>
     );
 }
@@ -171,5 +202,13 @@ const styles = StyleSheet.create({
     primaryButtonText: {
         color: '#000000',
         fontSize: 30,
+    },
+    remoteButton: {
+        width: 325,
+        height: 100,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#ffffff',
     },
 });

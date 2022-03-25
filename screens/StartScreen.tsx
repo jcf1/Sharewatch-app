@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableHighlight} from 'react-native';
+import { StyleSheet, View, Text, Image, TextInput, TouchableHighlight } from 'react-native';
 
 interface Props {
     beginWatch: () => void;
@@ -12,6 +12,7 @@ export const StartScreen: FC<Props> = ({beginWatch,setOffline,setCreate,setRoomC
     const [code, setCode] = useState('');
 
     function joinPress() {
+        setOffline(false);
         if(code.length === 4) {
             setRoomCode(code);
             beginWatch();
@@ -19,6 +20,7 @@ export const StartScreen: FC<Props> = ({beginWatch,setOffline,setCreate,setRoomC
     }
 
     function createPress() {
+        setOffline(false);
         setCreate(true);
         beginWatch();
     }
@@ -31,6 +33,9 @@ export const StartScreen: FC<Props> = ({beginWatch,setOffline,setCreate,setRoomC
     return(
         <View style={styles.body}>
             <View style={styles.heading}>
+                <View style={{paddingRight: 10}}>
+                    <Image style={styles.logoImage} source={require('../assets/sharewatch-logo.png')}/>
+                </View>
                 <Text style={styles.title}>ShareWatch</Text>
             </View>
 
@@ -62,11 +67,17 @@ const styles = StyleSheet.create({
     heading: {
         marginBottom: 20,
         borderBottomWidth: 2,
-        borderBottomColor: '#ffffff'
+        borderBottomColor: '#ffffff',
+        alignItems: 'flex-start',
+        flexDirection: 'row',
+    },
+    logoImage: {
+        height: 40,
+        width: 60,
     },
     title: {
         textAlign: 'center',
-        fontSize: 55,
+        fontSize: 45,
         fontWeight: 'bold',
         color: '#ffffff',
     },

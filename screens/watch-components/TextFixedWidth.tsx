@@ -12,7 +12,7 @@ interface Props {
 };
 
 export const TextFixedWidth: React.FC<Props> = ({ fontSize, color, paddingTop, paddingBottom, paddingLeft, paddingRight, children }) => {
-    const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace';
+    const fontFamily = Platform.OS === 'ios' ? 'Courier New' : 'monospace';
 
     return (
         <Text style={{fontFamily,fontSize,color,paddingTop,paddingBottom,paddingLeft,paddingRight}}>{ children }</Text>
