@@ -18,18 +18,104 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
 
     const [isLocalRunning, setLocalRunning] = useState(false);
     const [localStartTime, setLocalStartTime] = useState(0);
-    const [localSplitTime, setLocalSplitTime] = useState(0);
+    const [localLapTime, setLocalLapTime] = useState(0);
     
     const [watchDisplayTime, setWatchDisplayTime] = useState(0);
-    const [splitDisplayTime, setSplitDisplayTime] = useState(0);
+    const [lapDisplayTime, setLapDisplayTime] = useState(0);
 
     const [watchTime, setWatchTime] = useState(0);
-    const [splitTime, setSplitTime] = useState(0);
+    const [lapTime, setLapTime] = useState(0);
 
+    const [laps, setLaps] = useState<number[]>([]);
     const [splits, setSplits] = useState<number[]>([]);
 
     let watchInterval: { current: NodeJS.Timeout | null } = useRef(null);
     let splitInterval: { current: NodeJS.Timeout | null } = useRef(null);
+
+    function runWatch(accumTime: number, time: number) {
+        setWatchDisplayTime(accumTime + (moment.now() - time));
+    }
+
+    function runLap(accumTime: number, time: number) {
+        setLapDisplayTime(accumTime + (moment.now() - time));
+    }
+
+    //---------OFFLINE STOPWATCH FUNCTIONS---------
+    function stopIntervals() {
+        clearInterval(watchInterval.current as NodeJS.Timeout);
+        clearInterval(splitInterval.current as NodeJS.Timeout);
+    }
+
+    function localStartWatch() {
+        const now: number = moment.now();
+        setLocalRunning(true);
+        setLocalStartTime(now);
+        setLocalLapTime(now);
+
+        watchInterval.current = setInterval(() => {
+            runWatch(watchTime, now);
+        }, 1);
+
+        splitInterval.current = setInterval(() => {
+            runLap(lapTime, now);
+        }, 1);
+    }
+
+    function stopWatch() {
+        const now: number = moment.now();
+        setLocalRunning(false);
+        setWatchTime(watchTime + now - localStartTime);
+        setLapTime(lapTime + now - localLapTime);
+        setWatchDisplayTime(watchTime + now - localStartTime);
+        setLapDisplayTime(lapTime + now - localLapTime);
+        stopIntervals();
+    }
+
+    function resetWatch() {
+        setWatchTime(0);
+        setLapTime(0);
+        setWatchDisplayTime(0);
+        setLapDisplayTime(0);
+        setLaps([]);
+        setSplits([]);
+    }
+
+    function splitWatch() {
+        const now: number = moment.now();
+        clearInterval(splitInterval.current as NodeJS.Timeout);
+        setLaps([(now - localLapTime + lapTime), ...laps]);
+        setSplits([(now - localStartTime + watchTime), ...splits]);
+        setLocalLapTime(now);
+        setLapTime(0);
+        setLapDisplayTime(0);
+        splitInterval.current = setInterval(() => {
+            runLap(0, now);
+        }, 1);
+    }
+
+    //---------REMOTE STOPWATCH FUNCTIONS---------
+
+    useEffect(() => {
+        if(isRunning) {
+            if(!isLocalRunning && startTime && startTime > 0) {
+                setLocalRunning(true);
+                setLocalStartTime(startTime);
+                setLocalLapTime(startTime);
+                watchInterval.current = setInterval(() => {
+                    runWatch(watchTime, startTime);
+                }, 1);
+                splitInterval.current = setInterval(() => {
+                    runLap(lapTime, startTime);
+                }, 1);
+            }
+        } else if(!isRunning) {
+            if(isLocalRunning) {
+                setLocalRunning(false);
+                stopIntervals();
+            }
+            resetWatch();
+        }
+    }, [isRunning,startTime]);
 
     function resetAlert() {
         Alert.alert(
@@ -45,80 +131,6 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
             ]
         );
     }
-
-    useEffect(() => {
-        if(isRunning && startTime && startTime > 0) {
-            setLocalRunning(true);
-            setLocalStartTime(startTime);
-            setLocalSplitTime(startTime);
-            startIntervals(startTime);
-        } else if(!isRunning) {
-            if(isLocalRunning) {
-                stopWatch();
-            }
-            resetWatch();
-        }
-    }, [isRunning, startTime]);
-
-    function runWatch(time: number) {
-        setWatchDisplayTime(watchTime + (moment.now() - time));
-    }
-
-    function runSplit(time: number) {
-        setSplitDisplayTime(splitTime + (moment.now() - time));
-    }
-
-    //---------OFFLINE STOPWATCH FUNCTIONS---------
-
-    function startIntervals(time: number) {
-        watchInterval.current = setInterval(() => {
-            runWatch(time);
-        }, 1);
-        splitInterval.current = setInterval(() => {
-            runSplit(time);
-        }, 1);
-    }
-
-    function localStartWatch() {
-        const now: number = moment.now();
-        setLocalRunning(true);
-        setLocalStartTime(now);
-        setLocalSplitTime(now);
-        startIntervals(now);
-    }
-
-    function stopWatch() {
-        const now: number = moment.now();
-        setLocalRunning(false);
-        setWatchTime(watchTime + now - localStartTime);
-        setSplitTime(splitTime + now - localSplitTime);
-        setWatchDisplayTime(watchTime + now - localStartTime);
-        setSplitDisplayTime(splitTime + now - localSplitTime);
-        clearInterval(watchInterval.current as NodeJS.Timeout);
-        clearInterval(splitInterval.current as NodeJS.Timeout);
-    }
-
-    function resetWatch() {
-        setWatchTime(0);
-        setSplitTime(0);
-        setWatchDisplayTime(0);
-        setSplitDisplayTime(0);
-        setSplits([]);
-    }
-
-    function splitWatch() {
-        const now: number = moment.now();
-        clearInterval(splitInterval.current as NodeJS.Timeout);
-        setSplits(splits.concat(now - localSplitTime));
-        setLocalSplitTime(now);
-        setSplitTime(0);
-        setSplitDisplayTime(0);
-        splitInterval.current = setInterval(() => {
-            runSplit(now);
-        }, 1);
-    }
-
-    //---------REMOTE STOPWATCH FUNCTIONS---------
 
     function timeToDisplay(millisec: number) {
         let display: string = (millisec % 1000).toString().padStart(3,"0");
@@ -150,23 +162,23 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
                <TextFixedWidth fontSize={50} color={'#ffffff'}>{timeToDisplay(watchDisplayTime)}</TextFixedWidth>
            </View>
            <View style={styles.split}>
-               <TextFixedWidth fontSize={35} color={'#ffff00'}>{timeToDisplay(splitDisplayTime)}</TextFixedWidth>
+               <TextFixedWidth fontSize={35} color={'#ffff00'}>{timeToDisplay(lapDisplayTime)}</TextFixedWidth>
            </View>
 
             <View style={styles.primaryButtons}>
                 <View style={{paddingRight: 20}}>
-                    <TouchableOpacity style={[styles.primaryButton]} onPress={!isLocalRunning ? localStartWatch : stopWatch} disabled={!isOffline && !isRunning}>
+                    <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, isLocalRunning ? {backgroundColor: '#FE2E2E'} : {backgroundColor: '#2EFE2E'}]} onPress={!isLocalRunning ? localStartWatch : stopWatch} disabled={!isOffline && !isRunning}>
                         <Text style={styles.primaryButtonText}>{!isLocalRunning ? "START" : "STOP"}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{paddingLeft: 20}}>
-                    <TouchableOpacity style={[styles.primaryButton]} onPress={!isLocalRunning ? resetWatch : splitWatch} disabled={!isOffline && !isRunning}>
+                    <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, {backgroundColor: '#E6E6E6'}]} onPress={!isLocalRunning ? resetWatch : splitWatch} disabled={!isOffline && !isRunning}>
                         <Text style={styles.primaryButtonText}>{!isLocalRunning ? "RESET" : "SPLIT"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
-            <Splits splits={splits} timeToDisplay={timeToDisplay}/>
+            <Splits laps={laps} splits={splits} timeToDisplay={timeToDisplay}/>
 
             {(!isOffline && isHead) ? <View style={{paddingTop: 50}}><TouchableOpacity style={styles.remoteButton} onPress={!isRunning ? remoteStart : resetAlert}><Text style={styles.primaryButtonText}>{!isRunning ? "START ALL WATCHES" : "RESET ALL WATCHES"}</Text></TouchableOpacity></View> : null}
        </View>
@@ -199,6 +211,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#ffffff',
     },
+    diabledButton: {
+        opacity: 0.5,
+    },
     primaryButtonText: {
         color: '#000000',
         fontSize: 30,
@@ -209,6 +224,6 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#D99926',
     },
 });

@@ -34,8 +34,8 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, isCreate, jo
         socket.on('roomData', ({ room, master, running, startTime, users }) => {
             setRoomCode(room);
             setCurrHead(master);
-            setRemoteIsRunning(running);
-            setRemoteStartTime(startTime);
+            setRemoteStartTime(remoteStartTime => startTime);
+            setRemoteIsRunning(remoteIsRunning => running);
         });
 
         socket.on('socket_id', ({ id }) => {

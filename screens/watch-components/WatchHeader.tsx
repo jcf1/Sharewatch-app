@@ -17,13 +17,13 @@ export const WatchHeader: React.FC<Props> = ({ isOffline, endWatch, code, isHead
         <View style={styles.header}>
             <View style={styles.leftContainer}>
                 <TouchableHighlight onPress={endWatch}>
-                    <Text style={{textAlign: 'left', fontSize: 20}}>
+                    <Text style={{textAlign: 'left', fontSize: 20, color: 'white'}}>
                         Back
                     </Text>
                 </TouchableHighlight>
             </View>
-            {isOffline ? null : <Text style={{textAlign: 'right', fontSize: 20}}>Room Code: {code.toUpperCase()}</Text>}
-            {isOffline && !isHead ? null : <Text style={styles.rightContainer}>Head</Text>}
+            {isOffline ? null : <Text style={{textAlign: 'right', fontSize: 20, color: 'white'}}>Room Code: {code.toUpperCase()}</Text>}
+            {isOffline || !isHead ? null : <Text style={styles.rightContainer}>Head</Text>}
         </View>
     );
 }
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: 'red',
+        backgroundColor: '#585858',
     },
     leftContainer: {
         flex: 1,
@@ -50,5 +50,6 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         paddingRight: 10,
         fontSize: 20,
+        color: 'white',
     },
 });
