@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import * as io from 'socket.io-client';
 import moment from 'moment';
 
@@ -31,9 +31,9 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, isCreate, jo
 
         socket = io.io(ENDPOINT, { transports: ["websocket"] });
         
-        socket.on('roomData', ({ room, master, running, startTime, users }) => {
+        socket.on('roomData', ({ room, head, running, startTime, users }) => {
             setRoomCode(room);
-            setCurrHead(master);
+            setCurrHead(head);
             setRemoteStartTime(remoteStartTime => startTime);
             setRemoteIsRunning(remoteIsRunning => running);
         });
@@ -47,11 +47,12 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, isCreate, jo
             socket.emit('create', {  }, () => {});
         } else {
             setRoomCode(joinCode);
-            socket.emit('join', { joinCode }, () => {});
+            socket.emit('join', { room: joinCode }, () => {});
         }
     }, []);
 
     function remoteStart() {
+        //console.log(socketId);
         let s = moment().valueOf();
         socket.emit('start', {room: roomCode, startTime: s}, () => {});
     }
@@ -69,13 +70,20 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, isCreate, jo
     }
 
     return(
-        <>
+        <View style={styles.body}>
             <WatchHeader isOffline={isOffline} endWatch={close} code={roomCode} isHead={socketId === currHead} />
             {isOffline ?
                 <StopWatch isOffline={true} /> 
                 :
                 <StopWatch isOffline={false} isHead={socketId === currHead} isRunning={remoteIsRunning} startTime={remoteStartTime} remoteStart={remoteStart} remoteReset={remoteReset} />
             }
-        </>
+        </View>
     );
 }
+
+const styles = StyleSheet.create({
+    body: {
+        height: '100%',
+        backgroundColor: '#2B2B2B',
+    },
+})

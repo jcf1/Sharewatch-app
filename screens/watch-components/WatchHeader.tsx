@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
+import { RFPercentage } from "react-native-responsive-fontsize";
+
 
 interface Props {
     isOffline: boolean;
@@ -8,29 +10,29 @@ interface Props {
     isHead: boolean;
 };
 
-/*
-{ code ? <Text>Room Code:{code}</Text> : null }
-{ isHead ? <Text style={styles.rightContainer}>Head</Text> : null }
-*/
 export const WatchHeader: React.FC<Props> = ({ isOffline, endWatch, code, isHead }) => {
     return(
         <View style={styles.header}>
             <View style={styles.leftContainer}>
                 <TouchableHighlight onPress={endWatch}>
-                    <Text style={{textAlign: 'left', fontSize: 20, color: 'white'}}>
+                    <Text style={{textAlign: 'left', fontSize: RFPercentage(3.5), color: 'white'}}>
                         Back
                     </Text>
                 </TouchableHighlight>
             </View>
-            {isOffline ? null : <Text style={{textAlign: 'right', fontSize: 20, color: 'white'}}>Room Code: {code.toUpperCase()}</Text>}
-            {isOffline || !isHead ? null : <Text style={styles.rightContainer}>Head</Text>}
+            <View style={{flex: 1}}>
+                {isOffline ? null : <Text style={{textAlign: 'center', fontSize: RFPercentage(2.75), color: 'white'}}>Code: {code.toUpperCase()}</Text>}
+            </View>
+            <View style={{flex: 1, paddingRight: '5%'}}>
+                {isOffline || !isHead ? null : <Text style={{textAlign: 'right', fontSize: RFPercentage(3.5), color: 'white'}}>Head</Text>}
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     header: {
-        height: 50,
+        height: '7%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -40,16 +42,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        paddingLeft: 10,
-        width: 50,
-    },
-    rightContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        textAlign: 'right',
-        paddingRight: 10,
-        fontSize: 20,
-        color: 'white',
-    },
+        paddingLeft: '5%',
+        width:  '33%',
+    }
 });

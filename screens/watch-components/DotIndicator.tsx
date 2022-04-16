@@ -25,17 +25,17 @@ export const DotIndictor: React.FC<Props> = ({ index, total }) => {
 
 const styles = StyleSheet.create({
     dotContainer: {
+        height: '0.0667%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-
     },
     dot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
+        width: '5%',
+        aspectRatio: 1,
+        borderRadius: 100,
         backgroundColor: '#BBBBBB',
-        margin: 5,
+        margin: '2%',
     },
     selected: {
         backgroundColor: '#FFFFFF',

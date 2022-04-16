@@ -1,5 +1,7 @@
 import React from 'react';
-import { Platform, Text } from 'react-native';
+import { Platform, View, Text } from 'react-native';
+import { RFPercentage } from "react-native-responsive-fontsize";
+
 
 interface Props {
     fontSize: number;
@@ -15,6 +17,8 @@ export const TextFixedWidth: React.FC<Props> = ({ fontSize, color, paddingTop, p
     const fontFamily = Platform.OS === 'ios' ? 'Courier New' : 'monospace';
 
     return (
-        <Text style={{fontFamily,fontSize,color,paddingTop,paddingBottom,paddingLeft,paddingRight}}>{ children }</Text>
+        <View style={{paddingTop,paddingBottom,paddingLeft,paddingRight}}>
+            <Text style={{color,fontFamily,fontSize: RFPercentage(fontSize)}}>{ children }</Text>
+        </View>
     );
 }

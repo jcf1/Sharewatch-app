@@ -20,7 +20,7 @@ const App: FC = () => {
 
   return (
     <>
-      <StatusBar />
+      <StatusBar barStyle="dark-content"/>
       <SafeAreaView>
         {!isWatch ? <StartScreen beginWatch={beginWatch} setOffline={setOffline} setCreate={setCreate} setRoomCode={setRoomCode} /> : <WatchScreen endWatch={endWatch} isOffline={isOffline} isCreate={isCreate} joinCode={roomCode} />}
       </SafeAreaView>

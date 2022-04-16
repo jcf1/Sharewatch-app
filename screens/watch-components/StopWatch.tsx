@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Dimensions, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { RFPercentage } from "react-native-responsive-fontsize";
 import moment from 'moment';
 
 import { TextFixedWidth } from './TextFixedWidth';
@@ -15,6 +16,10 @@ interface Props {
 };
 
 export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, startTime, remoteStart, remoteReset }) => {
+
+    const width = Dimensions.get('window').width;
+    const height = Dimensions.get('window').height;
+    const styles = createStyles(width, height);
 
     const [isLocalRunning, setLocalRunning] = useState(false);
     const [localStartTime, setLocalStartTime] = useState(0);
@@ -156,57 +161,60 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
         return display;
     }
 
+    const startButton = <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, isLocalRunning ? {backgroundColor: '#FE2E2E'} : {backgroundColor: '#2EFE2E'}]} onPress={!isLocalRunning ? localStartWatch : stopWatch} disabled={!isOffline && !isRunning}><Text style={styles.primaryButtonText}>{!isLocalRunning ? "START" : "STOP"}</Text></TouchableOpacity>
+    const resetButton = <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, {backgroundColor: '#E6E6E6'}]} onPress={!isLocalRunning ? resetWatch : splitWatch} disabled={!isOffline && !isRunning}><Text style={styles.primaryButtonText}>{!isLocalRunning ? "RESET" : "SPLIT"}</Text></TouchableOpacity>
+
     return(
         <View style={styles.container}>
            <View style={styles.watch}>
-               <TextFixedWidth fontSize={50} color={'#ffffff'}>{timeToDisplay(watchDisplayTime)}</TextFixedWidth>
+               <TextFixedWidth fontSize={6.25} color={'#ffffff'}>{timeToDisplay(watchDisplayTime)}</TextFixedWidth>
            </View>
-           <View style={styles.split}>
-               <TextFixedWidth fontSize={35} color={'#ffff00'}>{timeToDisplay(lapDisplayTime)}</TextFixedWidth>
+           <View style={styles.lap}>
+               <TextFixedWidth fontSize={4.25} color={'#ffff00'}>{timeToDisplay(lapDisplayTime)}</TextFixedWidth>
            </View>
 
             <View style={styles.primaryButtons}>
-                <View style={{paddingRight: 20}}>
-                    <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, isLocalRunning ? {backgroundColor: '#FE2E2E'} : {backgroundColor: '#2EFE2E'}]} onPress={!isLocalRunning ? localStartWatch : stopWatch} disabled={!isOffline && !isRunning}>
-                        <Text style={styles.primaryButtonText}>{!isLocalRunning ? "START" : "STOP"}</Text>
-                    </TouchableOpacity>
+                <View style={{paddingRight: '10%'}}>
+                    {startButton}
                 </View>
-                <View style={{paddingLeft: 20}}>
-                    <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, {backgroundColor: '#E6E6E6'}]} onPress={!isLocalRunning ? resetWatch : splitWatch} disabled={!isOffline && !isRunning}>
-                        <Text style={styles.primaryButtonText}>{!isLocalRunning ? "RESET" : "SPLIT"}</Text>
-                    </TouchableOpacity>
+                <View style={{paddingLeft: '10%'}}>
+                    {resetButton}
                 </View>
             </View>
 
             <Splits laps={laps} splits={splits} timeToDisplay={timeToDisplay}/>
 
-            {(!isOffline && isHead) ? <View style={{paddingTop: 50}}><TouchableOpacity style={styles.remoteButton} onPress={!isRunning ? remoteStart : resetAlert}><Text style={styles.primaryButtonText}>{!isRunning ? "START ALL WATCHES" : "RESET ALL WATCHES"}</Text></TouchableOpacity></View> : null}
+            {(!isOffline && isHead) ? <View style={styles.remoteContainer}><TouchableOpacity style={styles.remoteButton} onPress={!isRunning ? remoteStart : resetAlert}><Text style={styles.primaryButtonText}>{!isRunning ? "START ALL WATCHES" : "RESET ALL WATCHES"}</Text></TouchableOpacity></View> : null}
        </View>
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (width: number,height: number) => StyleSheet.create({
     container: {
-        height: '100%',
+        height: '93%',
+        width: '100%',
         alignItems: 'center',
         backgroundColor: '#2B2B2B',
     },
     watch: {
-        paddingTop: 40,
-        paddingBottom: 20,
+        height: '10%',
+        paddingTop: '2%',
+        paddingBottom: '2%',
     },
-    split: {
-        paddingBottom: 20,
+    lap: {
+        height: '7%',
+        paddingBottom: '5%',
     },
     primaryButtons: {
+        height: '20%',
         alignItems: 'flex-start',
         flexDirection: 'row',
-        paddingBottom: 30,
+        paddingBottom: '5%',
     },
     primaryButton: {
-        width: 125,
-        height: 125,
-        borderRadius: 250,
+        height: '100%',
+        aspectRatio: 1,
+        borderRadius: 100,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#ffffff',
@@ -216,11 +224,18 @@ const styles = StyleSheet.create({
     },
     primaryButtonText: {
         color: '#000000',
-        fontSize: 30,
+        fontSize: RFPercentage(3.5),
+    },
+    remoteContainer: {
+        height: '15%',
+        width: '100%',
+        paddingTop: '2%',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     remoteButton: {
-        width: 325,
-        height: 100,
+        width: '80%',
+        height: '100%',
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
