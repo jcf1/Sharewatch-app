@@ -13,7 +13,7 @@ interface Props {
 export const Splits: React.FC<Props> = ({ laps, splits, timeToDisplay }) => {
 
     const width = Math.floor(Dimensions.get('window').width * 0.9);
-    const height = Math.floor(Dimensions.get('window').height * 0.32);
+    const height = Math.floor(Dimensions.get('window').height * 0.34);
     const styles = createStyles(width, height);
 
     const scrollRef = useRef<ScrollView>(null);
@@ -26,6 +26,7 @@ export const Splits: React.FC<Props> = ({ laps, splits, timeToDisplay }) => {
         if(laps.length > 0) {
             lapsRef?.current?.scrollToIndex({ index: 0 });
             splitsRef?.current?.scrollToIndex({ index: 0 });
+            setScrollIndex(0);
         }
     }, [laps,splits]);
     
@@ -62,7 +63,7 @@ export const Splits: React.FC<Props> = ({ laps, splits, timeToDisplay }) => {
                     snapToAlignment={"center"}
                     showsHorizontalScrollIndicator={false}
                 >
-                    <View style={styles.splitView}>
+                    <View>
                         <FlatList
                             ref={lapsRef}
                             data={laps}
@@ -70,7 +71,7 @@ export const Splits: React.FC<Props> = ({ laps, splits, timeToDisplay }) => {
                             keyExtractor={(item, index) => index.toString()}
                         />
                     </View>
-                    <View style={styles.splitView}>
+                    <View>
                         <FlatList
                             ref={splitsRef}
                             data={splits}
@@ -90,19 +91,16 @@ const createStyles = (width: number, height: number) => StyleSheet.create({
         height: height,
         width: width,
         alignItems: 'center',
-        backgroundColor: "#505050",
     },
     splitContainer: {
-        height: height * 0.9375,
-    },
-    splitView: {
+        height: '88%',
+        width: '100%',
         backgroundColor: "#505050",
     },
     split: {
         flexDirection: 'row',
         width: width,
         height: height * 0.18,
-        marginBottom: height * 0.01,
         justifyContent: 'space-between',
         alignItems: 'center'
     },

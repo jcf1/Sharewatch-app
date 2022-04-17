@@ -16,7 +16,7 @@ export const WatchHeader: React.FC<Props> = ({ isOffline, endWatch, code, isHead
             <View style={styles.leftContainer}>
                 <TouchableHighlight onPress={endWatch}>
                     <Text style={{textAlign: 'left', fontSize: RFPercentage(3.5), color: 'white'}}>
-                        Back
+                        Exit
                     </Text>
                 </TouchableHighlight>
             </View>

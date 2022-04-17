@@ -37,6 +37,14 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
     let watchInterval: { current: NodeJS.Timeout | null } = useRef(null);
     let splitInterval: { current: NodeJS.Timeout | null } = useRef(null);
 
+
+    useEffect(() => {
+        return () => {
+            stopWatch();
+            resetWatch();
+        }
+      },[])
+
     function runWatch(accumTime: number, time: number) {
         setWatchDisplayTime(accumTime + (moment.now() - time));
     }
@@ -203,7 +211,7 @@ const createStyles = (width: number,height: number) => StyleSheet.create({
     },
     lap: {
         height: '7%',
-        paddingBottom: '5%',
+        paddingBottom: '2%',
     },
     primaryButtons: {
         height: '20%',
@@ -227,15 +235,16 @@ const createStyles = (width: number,height: number) => StyleSheet.create({
         fontSize: RFPercentage(3.5),
     },
     remoteContainer: {
-        height: '15%',
+        height: '22%',
         width: '100%',
         paddingTop: '2%',
+        paddingBottom: '2%',
         alignItems: 'center',
         justifyContent: 'center',
     },
     remoteButton: {
         width: '80%',
-        height: '100%',
+        height: '80%',
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',

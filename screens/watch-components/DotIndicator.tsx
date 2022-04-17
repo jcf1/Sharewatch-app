@@ -29,9 +29,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: '6%',
     },
     dot: {
-        width: '5%',
+        width: '3%',
         aspectRatio: 1,
         borderRadius: 100,
         backgroundColor: '#BBBBBB',
