@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import { StyleSheet, View, Text, Image, TextInput, TouchableHighlight } from 'react-native';
+import { StyleSheet, View, Text, Image, TextInput, TouchableHighlight, Switch } from 'react-native';
 import { RFPercentage } from "react-native-responsive-fontsize";
 
 interface Props {
@@ -7,9 +7,11 @@ interface Props {
     setOffline: React.Dispatch<React.SetStateAction<boolean>>;
     setCreate: React.Dispatch<React.SetStateAction<boolean>>;
     setRoomCode: React.Dispatch<React.SetStateAction<string>>;
+    leftMode: boolean;
+    setLeftMode: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const StartScreen: FC<Props> = ({beginWatch,setOffline,setCreate,setRoomCode}) => {
+export const StartScreen: FC<Props> = ({beginWatch, setOffline, setCreate, setRoomCode, leftMode, setLeftMode}) => {
     const [code, setCode] = useState('');
 
     function joinPress() {
@@ -53,8 +55,17 @@ export const StartScreen: FC<Props> = ({beginWatch,setOffline,setCreate,setRoomC
                     <Text style={styles.buttonText}>Create Room</Text>
                 </TouchableHighlight>
                 <TouchableHighlight style={styles.fullButton} onPress={offlinePress}>
-                    <Text style={styles.buttonText}>Offline StopWatch</Text>
+                    <Text style={styles.buttonText}>Offline Stopwatch</Text>
                 </TouchableHighlight>
+                <View style={styles.switchView}>
+                    <Text style={styles.switchText}>Left-Handed Button Layout: </Text>
+                    <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={"#f4f3f4"}
+                        onValueChange={() => {setLeftMode(leftMode=> !leftMode)}}
+                        value={leftMode}
+                    />
+                </View>
             </View>
         </View>
     );
@@ -133,4 +144,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#ffffff',
     },
+    switchView: {
+        width: '100%',
+        height: '20%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+    },
+    switchText: {
+        textAlign: 'center',
+        fontSize: RFPercentage(2.5),
+        color: '#ffffff',
+    }
 });

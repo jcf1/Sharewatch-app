@@ -7,10 +7,10 @@ interface Props {
     isOffline: boolean;
     endWatch: () => void;
     code: string;
-    isHead: boolean;
+    users: string[];
 };
 
-export const WatchHeader: React.FC<Props> = ({ isOffline, endWatch, code, isHead }) => {
+export const WatchHeader: React.FC<Props> = ({ isOffline, endWatch, code, users }) => {
     return(
         <View style={styles.header}>
             <View style={styles.leftContainer}>
@@ -21,10 +21,10 @@ export const WatchHeader: React.FC<Props> = ({ isOffline, endWatch, code, isHead
                 </TouchableHighlight>
             </View>
             <View style={{flex: 1}}>
-                {isOffline ? null : <Text style={{textAlign: 'center', fontSize: RFPercentage(2.75), color: 'white'}}>Code: {code.toUpperCase()}</Text>}
+                {!isOffline && <Text style={{textAlign: 'center', fontSize: RFPercentage(2.75), color: 'white'}}>Code: {code.toUpperCase()}</Text>}
             </View>
             <View style={{flex: 1, paddingRight: '5%'}}>
-                {isOffline || !isHead ? null : <Text style={{textAlign: 'right', fontSize: RFPercentage(3.5), color: 'white'}}>Head</Text>}
+                {!isOffline && <Text style={{textAlign: 'right', fontSize: RFPercentage(2.75), color: 'white'}}>Users: {users.length}</Text>}
             </View>
         </View>
     );

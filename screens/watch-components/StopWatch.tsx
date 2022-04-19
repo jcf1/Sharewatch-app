@@ -8,6 +8,7 @@ import { Splits } from './Splits';
 
 interface Props {
     isOffline: boolean;
+    leftMode: boolean;
     isHead?: boolean;
     isRunning?: boolean;
     startTime?: number;
@@ -15,7 +16,7 @@ interface Props {
     remoteReset?: () => void;
 };
 
-export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, startTime, remoteStart, remoteReset }) => {
+export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunning, startTime, remoteStart, remoteReset }) => {
 
     const width = Dimensions.get('window').width;
     const height = Dimensions.get('window').height;
@@ -183,16 +184,16 @@ export const StopWatch: React.FC<Props> = ({ isOffline, isHead, isRunning, start
 
             <View style={styles.primaryButtons}>
                 <View style={{paddingRight: '10%'}}>
-                    {startButton}
+                    {leftMode ? startButton : resetButton}
                 </View>
                 <View style={{paddingLeft: '10%'}}>
-                    {resetButton}
+                    {leftMode ? resetButton : startButton}
                 </View>
             </View>
 
             <Splits laps={laps} splits={splits} timeToDisplay={timeToDisplay}/>
 
-            {(!isOffline && isHead) ? <View style={styles.remoteContainer}><TouchableOpacity style={styles.remoteButton} onPress={!isRunning ? remoteStart : resetAlert}><Text style={styles.primaryButtonText}>{!isRunning ? "START ALL WATCHES" : "RESET ALL WATCHES"}</Text></TouchableOpacity></View> : null}
+            {(!isOffline && isHead) && <View style={styles.remoteContainer}><TouchableOpacity style={styles.remoteButton} onPress={!isRunning ? remoteStart : resetAlert}><Text style={styles.primaryButtonText}>{!isRunning ? "START ALL WATCHES" : "RESET ALL WATCHES"}</Text></TouchableOpacity></View>}
        </View>
     );
 }

@@ -9,6 +9,7 @@ const App: FC = () => {
   const [isOffline, setOffline] = useState(false);
   const [isCreate, setCreate] = useState(false);
   const [roomCode, setRoomCode] = useState('');
+  const [leftMode, setLeftMode] = useState(false);
 
   function beginWatch() {
     setWatch(true);
@@ -22,7 +23,7 @@ const App: FC = () => {
     <>
       <StatusBar barStyle="dark-content"/>
       <SafeAreaView>
-        {!isWatch ? <StartScreen beginWatch={beginWatch} setOffline={setOffline} setCreate={setCreate} setRoomCode={setRoomCode} /> : <WatchScreen endWatch={endWatch} isOffline={isOffline} isCreate={isCreate} joinCode={roomCode} />}
+        {!isWatch ? <StartScreen beginWatch={beginWatch} setOffline={setOffline} setCreate={setCreate} setRoomCode={setRoomCode} leftMode={leftMode} setLeftMode={setLeftMode} /> : <WatchScreen endWatch={endWatch} isOffline={isOffline} leftMode={leftMode} isCreate={isCreate} joinCode={roomCode} />}
       </SafeAreaView>
     </>
   );
