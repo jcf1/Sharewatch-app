@@ -14,9 +14,10 @@ interface Props {
     startTime?: number;
     remoteStart?: () => void;
     remoteReset?: () => void;
+    exit?: (title: string, message: string) => void;
 };
 
-export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunning, startTime, remoteStart, remoteReset }) => {
+export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunning, startTime, remoteStart, remoteReset, exit }) => {
 
     const width = Dimensions.get('window').width;
     const height = Dimensions.get('window').height;
@@ -38,9 +39,17 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
     let watchInterval: { current: NodeJS.Timeout | null } = useRef(null);
     let splitInterval: { current: NodeJS.Timeout | null } = useRef(null);
 
+    const inactivityLimit = 86400000;
+    let inactiveTimeout: { current: NodeJS.Timeout | null } = useRef(null);
 
     useEffect(() => {
+        if(!isOffline && exit) {
+            inactiveTimeout.current = setTimeout(() => {
+                exit('Inactivity Removal','You were removed from the room for inactivity.');
+            }, inactivityLimit);
+        }
         return () => {
+            clearTimeout(inactiveTimeout.current as NodeJS.Timeout);
             stopWatch();
             resetWatch();
         }
@@ -52,6 +61,15 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
 
     function runLap(accumTime: number, time: number) {
         setLapDisplayTime(accumTime + (moment.now() - time));
+    }
+
+    function resetInactive() {
+        if(!isOffline && exit) {
+            clearTimeout(inactiveTimeout.current as NodeJS.Timeout);
+            inactiveTimeout.current = setTimeout(() => {
+                exit('Inactivity Removal','You were removed from the room for inactivity.');
+            }, inactivityLimit);
+        }
     }
 
     //---------OFFLINE STOPWATCH FUNCTIONS---------
@@ -73,6 +91,8 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         splitInterval.current = setInterval(() => {
             runLap(lapTime, now);
         }, 1);
+
+        resetInactive();
     }
 
     function stopWatch() {
@@ -83,6 +103,7 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         setWatchDisplayTime(watchTime + now - localStartTime);
         setLapDisplayTime(lapTime + now - localLapTime);
         stopIntervals();
+        resetInactive();
     }
 
     function resetWatch() {
@@ -92,6 +113,7 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         setLapDisplayTime(0);
         setLaps([]);
         setSplits([]);
+        resetInactive();
     }
 
     function splitWatch() {
@@ -105,9 +127,19 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         splitInterval.current = setInterval(() => {
             runLap(0, now);
         }, 1);
+        resetInactive();
     }
 
     //---------REMOTE STOPWATCH FUNCTIONS---------
+
+    function remoteClick() {
+        resetInactive();
+        if(!isRunning && remoteStart) {
+            remoteStart();
+        } else {
+            resetAlert();
+        }
+    }
 
     useEffect(() => {
         if(isRunning) {
@@ -154,19 +186,18 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         let hour_num: number = Math.floor(minu_num / 60);
 
         let sec: string = (sec_num % 60).toString();
-        let hour: string = (hour_num % 100).toString();
+        let hour: string = hour_num.toString();
         let minu: string = (minu_num % 60).toString();
         if(hour_num > 0) {
             minu = minu.padStart(2,"0");
             sec = sec.padStart(2,"0");
-            display = hour+":"+minu+":"+sec+"."+display;
+            display = hour_num < 999 ? hour+":"+minu+":"+sec+"."+display : hour+":"+minu+":"+sec;
         } else if(minu_num > 0) {
             sec = sec.padStart(2,"0");
             display = minu+":"+sec+"."+display;
         } else {
             display = sec+"."+display;
         }
-        
         return display;
     }
 
@@ -193,7 +224,7 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
 
             <Splits laps={laps} splits={splits} timeToDisplay={timeToDisplay}/>
 
-            {(!isOffline && isHead) && <View style={styles.remoteContainer}><TouchableOpacity style={styles.remoteButton} onPress={!isRunning ? remoteStart : resetAlert}><Text style={styles.primaryButtonText}>{!isRunning ? "START ALL WATCHES" : "RESET ALL WATCHES"}</Text></TouchableOpacity></View>}
+            {(!isOffline && isHead) && <View style={styles.remoteContainer}><TouchableOpacity style={styles.remoteButton} onPress={remoteClick}><Text style={styles.primaryButtonText}>{!isRunning ? "START ALL WATCHES" : "RESET ALL WATCHES"}</Text></TouchableOpacity></View>}
        </View>
     );
 }

@@ -41,6 +41,10 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, leftMode, is
             setRemoteIsRunning(remoteIsRunning => running);
         });
 
+        socket.on('inactivity', ({}) => {
+            closeAlert('Inactivity Closure','Room was closed due to inactivity.');
+        });
+
         socket.on('socket_id', ({ id }) => {
             setSocketId(id);
         });
@@ -93,7 +97,7 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, leftMode, is
             {isOffline ?
                 <StopWatch isOffline={true} leftMode={leftMode} /> 
                 :
-                <StopWatch isOffline={false} leftMode={leftMode} isHead={socketId === currHead} isRunning={remoteIsRunning} startTime={remoteStartTime} remoteStart={remoteStart} remoteReset={remoteReset} />
+                <StopWatch isOffline={false} leftMode={leftMode} isHead={socketId === currHead} isRunning={remoteIsRunning} startTime={remoteStartTime} remoteStart={remoteStart} remoteReset={remoteReset} exit={closeAlert} />
             }
         </View>
     );
