@@ -39,17 +39,8 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
     let watchInterval: { current: NodeJS.Timeout | null } = useRef(null);
     let splitInterval: { current: NodeJS.Timeout | null } = useRef(null);
 
-    const inactivityLimit = 86400000;
-    let inactiveTimeout: { current: NodeJS.Timeout | null } = useRef(null);
-
     useEffect(() => {
-        if(!isOffline && exit) {
-            inactiveTimeout.current = setTimeout(() => {
-                exit('Inactivity Removal','You were removed from the room for inactivity.');
-            }, inactivityLimit);
-        }
         return () => {
-            clearTimeout(inactiveTimeout.current as NodeJS.Timeout);
             stopWatch();
             resetWatch();
         }
@@ -61,15 +52,6 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
 
     function runLap(accumTime: number, time: number) {
         setLapDisplayTime(accumTime + (moment.now() - time));
-    }
-
-    function resetInactive() {
-        if(!isOffline && exit) {
-            clearTimeout(inactiveTimeout.current as NodeJS.Timeout);
-            inactiveTimeout.current = setTimeout(() => {
-                exit('Inactivity Removal','You were removed from the room for inactivity.');
-            }, inactivityLimit);
-        }
     }
 
     //---------OFFLINE STOPWATCH FUNCTIONS---------
@@ -91,8 +73,6 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         splitInterval.current = setInterval(() => {
             runLap(lapTime, now);
         }, 1);
-
-        resetInactive();
     }
 
     function stopWatch() {
@@ -103,7 +83,6 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         setWatchDisplayTime(watchTime + now - localStartTime);
         setLapDisplayTime(lapTime + now - localLapTime);
         stopIntervals();
-        resetInactive();
     }
 
     function resetWatch() {
@@ -113,7 +92,6 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         setLapDisplayTime(0);
         setLaps([]);
         setSplits([]);
-        resetInactive();
     }
 
     function splitWatch() {
@@ -127,13 +105,11 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         splitInterval.current = setInterval(() => {
             runLap(0, now);
         }, 1);
-        resetInactive();
     }
 
     //---------REMOTE STOPWATCH FUNCTIONS---------
 
     function remoteClick() {
-        resetInactive();
         if(!isRunning && remoteStart) {
             remoteStart();
         } else {
@@ -201,8 +177,8 @@ export const StopWatch: React.FC<Props> = ({ isOffline, leftMode, isHead, isRunn
         return display;
     }
 
-    const startButton = <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, isLocalRunning ? {backgroundColor: '#FE2E2E'} : {backgroundColor: '#2EFE2E'}]} onPress={!isLocalRunning ? localStartWatch : stopWatch} disabled={!isOffline && !isRunning}><Text style={styles.primaryButtonText}>{!isLocalRunning ? "START" : "STOP"}</Text></TouchableOpacity>
-    const resetButton = <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, {backgroundColor: '#E6E6E6'}]} onPress={!isLocalRunning ? resetWatch : splitWatch} disabled={!isOffline && !isRunning}><Text style={styles.primaryButtonText}>{!isLocalRunning ? "RESET" : "SPLIT"}</Text></TouchableOpacity>
+    const startButton = <TouchableOpacity style={[styles.primaryButton, (!isOffline && !isRunning) ? styles.diabledButton : {}, isLocalRunning ? {backgroundColor: '#f22b3f'} : {backgroundColor: '#44bf36'}]} onPress={!isLocalRunning ? localStartWatch : stopWatch} disabled={!isOffline && !isRunning}><View style={styles.primaryButttonBorder}><Text style={styles.primaryButtonText}>{!isLocalRunning ? "START" : "STOP"}</Text></View></TouchableOpacity>
+    const resetButton = <TouchableOpacity style={[styles.primaryButton, ((!isOffline && !isRunning) || (!isLocalRunning && watchTime <= 0)) ? styles.diabledButton : {}, {backgroundColor: '#d9d9d9'}]} onPress={!isLocalRunning ? resetWatch : splitWatch} disabled={(!isOffline && !isRunning) || (!isLocalRunning && watchTime <= 0)}><View style={styles.primaryButttonBorder}><Text style={styles.primaryButtonText}>{!isLocalRunning ? "RESET" : "SPLIT"}</Text></View></TouchableOpacity>
 
     return(
         <View style={styles.container}>
@@ -258,6 +234,14 @@ const createStyles = (width: number,height: number) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#ffffff',
+    },
+    primaryButttonBorder: {
+        height: '96%',
+        aspectRatio: 1,
+        borderRadius: 100,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     diabledButton: {
         opacity: 0.5,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Alert } from 'react-native';
+import { StyleSheet, View, Alert, Platform } from 'react-native';
 import * as io from 'socket.io-client';
 import moment from 'moment';
 
@@ -15,7 +15,7 @@ interface Props {
 };
 
 let socket: io.Socket;
-const ENDPOINT = 'http://localhost:5000';
+const ENDPOINT = Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
 
 export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, leftMode, isCreate, joinCode }) => {
     const [socketId, setSocketId] = useState('');
@@ -31,7 +31,11 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, leftMode, is
             return;
         }
 
-        socket = io.io(ENDPOINT, { transports: ["websocket"] });
+        socket = io.io(ENDPOINT, { transports: ["websocket"], reconnection: true, reconnectionAttempts: 10 });
+
+        socket.on('connect_error', function() {
+            closeAlert('Server Problem','Could not connect to server.');
+        });
         
         socket.on('roomData', ({ room, head, running, startTime, users }) => {
             setRoomCode(room);

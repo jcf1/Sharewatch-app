@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import { StyleSheet, View, Text, Image, TextInput, TouchableHighlight, Switch } from 'react-native';
+import { StyleSheet, Dimensions, View, Text, Image, TextInput, TouchableHighlight, Switch } from 'react-native';
 import { RFPercentage } from "react-native-responsive-fontsize";
 
 interface Props {
@@ -12,14 +12,18 @@ interface Props {
 };
 
 export const StartScreen: FC<Props> = ({beginWatch, setOffline, setCreate, setRoomCode, leftMode, setLeftMode}) => {
+
+    const width = Dimensions.get('window').width;
+    const height = Dimensions.get('window').height;
+    const styles = createStyles(width, height);
+
     const [code, setCode] = useState('');
 
     function joinPress() {
         setOffline(false);
         setCreate(false);
-        beginWatch();
         if(code.length === 4) {
-            //setRoomCode(code);
+            setRoomCode(code);
             beginWatch();
         }
     }
@@ -46,7 +50,7 @@ export const StartScreen: FC<Props> = ({beginWatch, setOffline, setCreate, setRo
 
             <View style={styles.body}>
                 <View style={styles.joinView}>
-                    <TextInput style={styles.joinInput} placeholder="CODE" autoCapitalize="characters" autoCompleteType="off" maxLength={4} onChangeText={setRoomCode}/>
+                    <TextInput style={styles.joinInput} placeholder="CODE" autoCapitalize="characters" autoCompleteType="off" maxLength={4} onChangeText={setCode}/>
                     <TouchableHighlight style={styles.joinButton} onPress={joinPress}>
                         <Text style={styles.buttonText}>Join Room</Text>
                     </TouchableHighlight>
@@ -60,7 +64,8 @@ export const StartScreen: FC<Props> = ({beginWatch, setOffline, setCreate, setRo
                 <View style={styles.switchView}>
                     <Text style={styles.switchText}>Left-Handed Button Layout: </Text>
                     <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        trackColor={{ false: "#a4a4a4", true: "#4d9078" }}
+                        ios_backgroundColor={"#a4a4a4"}
                         thumbColor={"#f4f3f4"}
                         onValueChange={() => {setLeftMode(leftMode=> !leftMode)}}
                         value={leftMode}
@@ -71,9 +76,9 @@ export const StartScreen: FC<Props> = ({beginWatch, setOffline, setCreate, setRo
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (width: number,height: number) => StyleSheet.create({
     container: {
-        height: '100%',
+        height: height,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#2B2B2B',
@@ -127,14 +132,14 @@ const styles = StyleSheet.create({
     joinButton: {
         width: '55%',
         height: '100%',
-        backgroundColor: '#3399ff',
+        backgroundColor: '#409FF1',
         justifyContent: 'center',
         paddingVertical: '5%',
     },
     fullButton: {
         width: '80%',
         height: '20%',
-        backgroundColor: '#3399ff',
+        backgroundColor: '#409FF1',
         justifyContent: 'center',
         marginTop: '5%',
     },

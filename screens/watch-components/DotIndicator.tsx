@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
         width: '3%',
         aspectRatio: 1,
         borderRadius: 100,
-        backgroundColor: '#BBBBBB',
+        backgroundColor: '#666666',
         margin: '2%',
     },
     selected: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#f2f2f2',
     }
 });

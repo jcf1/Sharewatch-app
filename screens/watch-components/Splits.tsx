@@ -26,12 +26,11 @@ export const Splits: React.FC<Props> = ({ laps, splits, timeToDisplay }) => {
         if(laps.length > 0) {
             lapsRef?.current?.scrollToIndex({ index: 0 });
             splitsRef?.current?.scrollToIndex({ index: 0 });
-            setScrollIndex(0);
         }
     }, [laps,splits]);
     
     function renderLap(lap: number, index: number) {
-        let color: string = ((index % 2) === 0) ? "#2E2E2E" : "#6E6E6E";
+        let color: string = ((index % 2) === 1) ? "#2E2E2E" : "#6E6E6E";
         return(
             <View style={[styles.split, {backgroundColor: color}]}>
                 <TextFixedWidth fontSize={3.5} color={"#FFFFFF"} paddingLeft={width*0.02}>{"LAP "+(index+1).toString()}</TextFixedWidth>
@@ -58,7 +57,7 @@ export const Splits: React.FC<Props> = ({ laps, splits, timeToDisplay }) => {
                     decelerationRate={0}
                     snapToInterval={width}
                     disableIntervalMomentum={true}
-                    onScroll={(e) => setScrollIndex(Math.floor(e.nativeEvent.contentOffset.x / width))}
+                    onScroll={(e) => setScrollIndex(Math.round(e.nativeEvent.contentOffset.x / (width-1)))}
                     scrollEventThrottle={0}
                     snapToAlignment={"center"}
                     showsHorizontalScrollIndicator={false}
