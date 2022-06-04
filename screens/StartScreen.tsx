@@ -89,6 +89,7 @@ const createStyles = (width: number,height: number) => StyleSheet.create({
         marginBottom: '5%',
         borderBottomWidth: 2,
         borderBottomColor: '#ffffff',
+        justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
     },
@@ -134,7 +135,6 @@ const createStyles = (width: number,height: number) => StyleSheet.create({
         height: '100%',
         backgroundColor: '#409FF1',
         justifyContent: 'center',
-        paddingVertical: '5%',
     },
     fullButton: {
         width: '80%',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Alert, Platform } from 'react-native';
+import { StyleSheet, View, Alert, ActivityIndicator } from 'react-native';
 import * as io from 'socket.io-client';
 import moment from 'moment';
 
@@ -15,13 +15,13 @@ interface Props {
 };
 
 let socket: io.Socket;
-const ENDPOINT = Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
+const ENDPOINT = 'https://sharewatch-server.herokuapp.com';
 
 export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, leftMode, isCreate, joinCode }) => {
     const [socketId, setSocketId] = useState('');
     const [roomCode, setRoomCode] = useState('');
     const [currHead, setCurrHead] = useState('');
-    const [romUsers, setRomUsers] = useState<string[]>([]);
+    const [roomUsrs, setRoomUsrs] = useState<string[]>([]);
     const [remoteIsRunning, setRemoteIsRunning] = useState(false);
     const [remoteStartTime, setRemoteStartTime] = useState(-1);
 
@@ -40,7 +40,7 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, leftMode, is
         socket.on('roomData', ({ room, head, running, startTime, users }) => {
             setRoomCode(room);
             setCurrHead(head);
-            setRomUsers(users);
+            setRoomUsrs(users);
             setRemoteStartTime(remoteStartTime => startTime);
             setRemoteIsRunning(remoteIsRunning => running);
         });
@@ -95,9 +95,17 @@ export const WatchScreen: React.FC<Props> = ({ endWatch, isOffline, leftMode, is
         endWatch();
     }
 
+    if(!isOffline && roomUsrs.length === 0) {
+        return(
+            <View style={styles.load}>
+                <ActivityIndicator size="large" color="#D99926" />
+            </View>
+        );
+    }
+
     return(
         <View style={styles.body}>
-            <WatchHeader isOffline={isOffline} endWatch={exit} code={roomCode} users={romUsers} />
+            <WatchHeader isOffline={isOffline} endWatch={exit} code={roomCode} users={roomUsrs} />
             {isOffline ?
                 <StopWatch isOffline={true} leftMode={leftMode} /> 
                 :
@@ -111,5 +119,11 @@ const styles = StyleSheet.create({
     body: {
         height: '100%',
         backgroundColor: '#2B2B2B',
+    },
+    load: {
+        height: '100%',
+        backgroundColor: '#2B2B2B',
+        alignItems: "center",
+        justifyContent: "center",
     },
 })

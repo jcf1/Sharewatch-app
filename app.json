@@ -17,13 +17,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jcf1.Sharewatch"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2B2B2B"
-      }
+      },
+      "package": "com.jcf1.Sharewatch"
     },
     "web": {
       "favicon": "./assets/favicon.png"
