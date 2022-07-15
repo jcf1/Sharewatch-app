@@ -2,7 +2,7 @@
   "expo": {
     "name": "Sharewatch",
     "slug": "Sharewatch",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -18,9 +18,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jcf1.Sharewatch"
+      "bundleIdentifier": "com.jcf1.Sharewatch",
+      "buildNumber": "2"
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2B2B2B"
